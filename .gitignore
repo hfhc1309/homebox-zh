@@ -1,0 +1,57 @@
+# Project Specific
+backend/.data/*
+config.yml
+homebox.db
+.idea
+.DS_Store
+test-mailer.json
+node_modules
+
+*.venv
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+.task/
+backend/.env
+build/*
+
+# Output Directory for Nuxt/Frontend during build step
+backend/app/api/public/*
+!backend/app/api/public/.gitkeep
+
+node_modules
+*.log*
+.nuxt
+.nitro
+.cache
+.output
+.env
+dist
+
+.pnpm-store
+backend/app/api/app
+backend/app/api/__debug_bin
+dist/
+
+# Nuxt Publish Dir
+backend/app/api/static/public/*
+!backend/app/api/static/public/.gitkeep
+backend/api

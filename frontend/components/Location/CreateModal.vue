@@ -1,0 +1,103 @@
+<template>
+  <BaseModal v-model="modal">
+    <template #title> 创建位置 </template>
+    <form @submit.prevent="create()">
+      <FormTextField
+        ref="locationNameRef"
+        v-model="form.name"
+        :trigger-focus="focused"
+        :autofocus="true"
+        label="位置名称"
+      />
+      <FormTextArea v-model="form.description" label="位置描述" />
+      <LocationSelector v-model="form.parent" />
+      <div class="modal-action">
+        <div class="flex justify-center">
+          <BaseButton class="rounded-r-none" type="submit" :loading="loading"> 创建 </BaseButton>
+          <div class="dropdown dropdown-top">
+            <label tabindex="0" class="btn rounded-l-none rounded-r-xl">
+              <MdiChevronDown class="h-5 w-5" />
+            </label>
+            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64 right-0">
+              <li>
+                <button type="button" @click="create(false)">创建和添加另一个</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </form>
+    <p class="text-sm text-center mt-4">
+      使用 <kbd class="kbd kbd-xs">Shift</kbd> + <kbd class="kbd kbd-xs"> Enter </kbd> 来创建和添加另一个
+    </p>
+  </BaseModal>
+</template>
+
+<script setup lang="ts">
+  import type { LocationSummary } from "~~/lib/api/types/data-contracts";
+  import MdiChevronDown from "~icons/mdi/chevron-down";
+  const props = defineProps({
+    modelValue: {
+      type: Boolean,
+      required: true,
+    },
+  });
+
+  const modal = useVModel(props, "modelValue");
+  const loading = ref(false);
+  const focused = ref(false);
+  const form = reactive({
+    name: "",
+    description: "",
+    parent: null as LocationSummary | null,
+  });
+
+  whenever(
+    () => modal.value,
+    () => {
+      focused.value = true;
+    }
+  );
+
+  function reset() {
+    form.name = "";
+    form.description = "";
+    form.parent = null;
+    focused.value = false;
+    loading.value = false;
+  }
+
+  const api = useUserApi();
+  const toast = useNotifier();
+
+  const { shift } = useMagicKeys();
+
+  async function create(close = true) {
+    loading.value = true;
+
+    if (shift.value) {
+      close = false;
+    }
+
+    const { data, error } = await api.locations.create({
+      name: form.name,
+      description: form.description,
+      parentId: form.parent ? form.parent.id : null,
+    });
+
+    if (error) {
+      loading.value = false;
+      toast.error("无法创建位置");
+    }
+
+    if (data) {
+      toast.success("位置已创建");
+    }
+    reset();
+
+    if (close) {
+      modal.value = false;
+      navigateTo(`/location/${data.id}`);
+    }
+  }
+</script>
